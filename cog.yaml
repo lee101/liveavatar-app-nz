@@ -8,8 +8,12 @@ build:
     - git
     - libgl1
     - libglib2.0-0
-  python_requirements: requirements.txt
   run:
+    # Cog already supplies CUDA 12.8, cuDNN, cuBLAS, and NCCL. Installing the
+    # PyTorch wheels without their duplicate nvidia-* packages removes several
+    # compressed gigabytes from each cold pull.
+    - pip install --no-deps torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu128
+    - pip install -r requirements.txt
     - git clone --filter=blob:none --no-checkout https://github.com/Alibaba-Quark/LiveAvatar.git /opt/liveavatar
     - git -C /opt/liveavatar sparse-checkout set liveavatar
     - git -C /opt/liveavatar fetch --depth 1 origin 76489bc1c6718edbf610009bcd5e5436b0dc8459

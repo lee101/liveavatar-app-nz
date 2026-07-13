@@ -43,6 +43,7 @@ jobs:
           image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/liveavatar-app-nz
           tag="$image:${GITHUB_REF_NAME//\//-}"
           cog build -t "$tag"
+          docker run --rm --entrypoint python "$tag" -c 'import torch, torchvision, torchaudio, flash_attn; assert torch.version.cuda == "12.8"'
           docker push "$tag"
           if [[ "$GITHUB_REF_NAME" == "main" ]]; then
             docker tag "$tag" "$image:latest"

@@ -51,6 +51,8 @@ No checkpoints are stored in Git or baked into the container. At worker setup, `
 
 The adapter selects only the Wan files needed for inference, omitting demos and duplicate Flax/PyTorch Wav2Vec checkpoints. Current upstream payloads are approximately 46GB after filtering plus the 1.35GB LiveAvatar LoRA.
 
+The image reuses CUDA, cuDNN, cuBLAS, and NCCL from Cog's CUDA 12.8 base instead of installing duplicate `nvidia-*` wheels with PyTorch. CI imports the complete GPU Python stack from the built image before publishing. This matters for cold starts: the first full-dependency image was 11.5GB compressed and exceeded app.nz's 24-minute community-host pull window.
+
 ## Runtime configuration
 
 | Variable | Default | Effect |
