@@ -18,6 +18,9 @@ build:
     - git -C /opt/liveavatar sparse-checkout set liveavatar
     - git -C /opt/liveavatar fetch --depth 1 origin 76489bc1c6718edbf610009bcd5e5436b0dc8459
     - git -C /opt/liveavatar checkout --detach 76489bc1c6718edbf610009bcd5e5436b0dc8459
-    - pip install --no-cache-dir flash-attn==2.8.3 --no-build-isolation
+    # Torch and Cog already provide every runtime dependency. Without
+    # --no-deps, this final install silently restores duplicate nvidia-* wheels
+    # and adds more than two compressed gigabytes to the cold pull.
+    - pip install --no-cache-dir --no-deps flash-attn==2.8.3 --no-build-isolation
 image: ghcr.io/lee101/liveavatar-app-nz:latest
 run: "predict.py:Predictor"
