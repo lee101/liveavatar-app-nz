@@ -49,3 +49,28 @@ jobs:
             docker tag "$tag" "$image:latest"
             docker push "$image:latest"
           fi
+
+  publish-appnz:
+    if: github.event_name == 'push'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reclaim runner disk
+        run: sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and publish app.nz runtime image
+        run: |
+          image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/liveavatar-app-nz
+          tag="$image:appnz-${GITHUB_REF_NAME//\//-}"
+          docker build -f Dockerfile.appnz -t "$tag" .
+          docker run --rm --entrypoint python3 "$tag" -c 'import sys, torch, torchvision, torchaudio, flash_attn_interface; sys.path.insert(0, "/opt/liveavatar"); from liveavatar.models.wan.wan_2_2.modules import attention; assert torch.version.cuda == "12.8"; assert attention.FLASH_ATTN_3_AVAILABLE'
+          docker push "$tag"
+          if [[ "$GITHUB_REF_NAME" == "main" ]]; then
+            docker tag "$tag" "$image:appnz"
+            docker push "$image:appnz"
+          fi

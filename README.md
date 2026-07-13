@@ -53,6 +53,12 @@ The adapter selects only the Wan files needed for inference, omitting demos and 
 
 The image reuses CUDA, cuDNN, cuBLAS, and NCCL from Cog's CUDA 12.8 base instead of installing duplicate `nvidia-*` wheels with PyTorch. CI imports the complete GPU Python stack from the built image before publishing. This matters for cold starts: the first full-dependency image was 11.5GB compressed and exceeded app.nz's 24-minute community-host pull window.
 
+app.nz uses the separate `ghcr.io/lee101/liveavatar-app-nz:appnz` tag. It
+implements the same Cog HTTP contract from a CUDA runtime base and uses the
+upstream-recommended FlashAttention 3 wheel, avoiding CUDA compiler layers that
+Cog retains for portable image builds. The regular `latest` tag remains the
+canonical Cog image for Replicate-compatible deployment.
+
 ## Runtime configuration
 
 | Variable | Default | Effect |
