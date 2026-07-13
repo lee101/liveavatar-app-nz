@@ -12,12 +12,12 @@ build:
     # Cog already supplies CUDA 12.8, cuDNN, cuBLAS, and NCCL. Installing the
     # PyTorch wheels without their duplicate nvidia-* packages removes several
     # compressed gigabytes from each cold pull.
-    - pip install --no-deps torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu128
-    - pip install 'diffusers>=0.31.0' transformers==4.51.3 'tokenizers>=0.20.3' 'accelerate>=1.1.1' peft==0.17.1 safetensors huggingface_hub hf_transfer 'imageio[ffmpeg]' imageio-ffmpeg 'opencv-python-headless>=4.9.0.80' 'numpy>=1.23.5,<2' pillow librosa decord easydict einops ftfy regex pyyaml scipy tqdm
+    - pip install --no-cache-dir --no-deps torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu128
+    - pip install --no-cache-dir 'diffusers>=0.31.0' transformers==4.51.3 'tokenizers>=0.20.3' 'accelerate>=1.1.1' peft==0.17.1 safetensors huggingface_hub hf_transfer 'imageio[ffmpeg]' imageio-ffmpeg 'opencv-python-headless>=4.9.0.80' 'numpy>=1.23.5,<2' pillow librosa decord easydict einops ftfy regex pyyaml scipy tqdm && pip freeze | awk -F== '/^nvidia-/ {print $1}' | xargs -r pip uninstall -y
     - git clone --filter=blob:none --no-checkout https://github.com/Alibaba-Quark/LiveAvatar.git /opt/liveavatar
     - git -C /opt/liveavatar sparse-checkout set liveavatar
     - git -C /opt/liveavatar fetch --depth 1 origin 76489bc1c6718edbf610009bcd5e5436b0dc8459
     - git -C /opt/liveavatar checkout --detach 76489bc1c6718edbf610009bcd5e5436b0dc8459
-    - pip install flash-attn==2.8.3 --no-build-isolation
+    - pip install --no-cache-dir flash-attn==2.8.3 --no-build-isolation
 image: ghcr.io/lee101/liveavatar-app-nz:latest
 run: "predict.py:Predictor"
