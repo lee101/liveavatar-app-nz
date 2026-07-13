@@ -1,0 +1,50 @@
+name: test-and-publish
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install pillow pytest pyyaml
+      - run: pytest -q
+
+  publish:
+    if: github.event_name == 'push'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reclaim runner disk
+        run: sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Cog
+        uses: replicate/setup-cog@v2
+        with:
+          cog-version: "v0.21.0"
+      - name: Build and publish image
+        run: |
+          image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/liveavatar-app-nz
+          tag="$image:${GITHUB_REF_NAME//\//-}"
+          cog build -t "$tag"
+          docker push "$tag"
+          if [[ "$GITHUB_REF_NAME" == "main" ]]; then
+            docker tag "$tag" "$image:latest"
+            docker push "$image:latest"
+          fi

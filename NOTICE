@@ -1,0 +1,13 @@
+LiveAvatar Cog adapter
+Copyright 2026 the adapter contributors
+
+This product includes software developed by the Alibaba-Quark LiveAvatar
+contributors, pinned from:
+https://github.com/Alibaba-Quark/LiveAvatar
+commit 76489bc1c6718edbf610009bcd5e5436b0dc8459
+
+It uses model weights from:
+https://huggingface.co/Wan-AI/Wan2.2-S2V-14B
+https://huggingface.co/Quark-Vision/Live-Avatar
+
+All three upstream artifacts identify their license as Apache-2.0.

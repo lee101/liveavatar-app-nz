@@ -1,0 +1,10 @@
+[project]
+name = "liveavatar-app-nz"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[dependency-groups]
+dev = ["pillow", "pytest", "pyyaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
